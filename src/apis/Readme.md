@@ -1,0 +1,1 @@
+## To contain all APIs i.e any resource created with "nest generate resource" or any controller that also exposes an API
