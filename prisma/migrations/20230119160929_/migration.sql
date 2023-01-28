@@ -2,15 +2,12 @@
 CREATE TYPE "Roles" AS ENUM ('buyer', 'seller');
 
 -- CreateEnum
-CREATE TYPE "TransactionType" AS ENUM ('BUY', 'DEPOSIT');
-
--- CreateEnum
 CREATE TYPE "Status" AS ENUM ('pending', 'paid', 'expired', 'failed');
 
 -- CreateTable
 CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
-    "amount_available" INTEGER,
+    "amount_available" INTEGER NOT NULL,
     "cost" INTEGER NOT NULL,
     "product_name" VARCHAR(50) NOT NULL,
     "date_created" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

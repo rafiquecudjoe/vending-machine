@@ -7,7 +7,7 @@ import {
   ResponseWithoutData,
 } from '../../common/entities/response.entity';
 import { ProductsValidator } from './product.validator';
-import { ProductsRepository } from 'src/repositories/product.repository';
+import { ProductsRepository } from '../../repositories/product.repository';
 import { CreateProductDto, UpdateProductDto } from './dtos/product.dto';
 
 @Injectable()
@@ -32,6 +32,7 @@ export class ProductsService {
         {
           cost: params.cost,
           name: params.name,
+          amountAvailable:params.amountAvailable
         },
         sellerId,
       );
@@ -75,7 +76,7 @@ export class ProductsService {
     productId: string,
   ): Promise<ResponseWithData> {
     try {
-      // validate update user
+      // validate update product
       const validationResults =
         await this.productValidator.validatePatchProduct({
           data,
@@ -85,7 +86,7 @@ export class ProductsService {
       if (validationResults.status !== HttpStatus.OK) return validationResults;
 
       // update product
-      await this.productRepository.updateProduct(sellerId, data);
+      await this.productRepository.updateProduct(productId, data);
 
       // success
       return Response.withoutData(
@@ -112,7 +113,7 @@ export class ProductsService {
       if (validationResults.status !== HttpStatus.OK) return validationResults;
 
       // delete product
-      await this.productRepository.removeProduct(sellerId);
+      await this.productRepository.removeProduct(productId);
 
       // success
       return Response.withoutData(
@@ -130,6 +131,12 @@ export class ProductsService {
 
   async getAProduct(productId: string): Promise<ResponseWithData> {
     try {
+
+      // validate update product
+      const validationResults =
+        await this.productValidator.validateRetrieveProduct(productId)
+      if (validationResults.status !== HttpStatus.OK) return validationResults;
+      
       // retrieve product
       const product = await this.productRepository.retrieveProductById(
         productId,

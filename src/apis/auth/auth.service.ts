@@ -8,6 +8,9 @@ import logger from '../../utils/logger';
 import { Constants } from '../../common/enums/constants.enum';
 import { UsersRepository } from '../../repositories/user.repository';
 import { LoginDto } from './dtos/auth.dto';
+import { Request, } from 'express';
+import redis from '../../common/redis';
+
 
 @Injectable()
 export class AuthService {
@@ -15,7 +18,7 @@ export class AuthService {
     private readonly prismaService: PrismaService,
     private jwtService: JwtService,
     private readonly userRepository: UsersRepository,
-  ) {}
+  ) { }
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.userRepository.retrieveUserByUsername(username);
@@ -29,7 +32,7 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: LoginDto): Promise<ResponseWithData> {
+  async login(loginDto: LoginDto, req: Request): Promise<ResponseWithData> {
     try {
       const { username, password } = loginDto;
 
@@ -50,12 +53,49 @@ export class AuthService {
         throw new UnauthorizedException('invalid password');
       }
 
+      // check if active session exist for user
+      const getData = await redis.KEYS(`*${user.id}*`)
+      if (getData.length > 0) {
+        return Response.withoutData(HttpStatus.BAD_REQUEST, "There is already an active session using your account")
+      }
+
+      const jwt = this.jwtService.sign({
+        username,
+      })
+
+      // set keys to redis
+      await redis.SET(`${jwt}:${user.id}`, JSON.stringify(req.user))
+
       return Response.withData(HttpStatus.OK, 'User successfully logged in', {
-        token: this.jwtService.sign({
-          username,
-        }),
+        token: jwt,
         user,
       });
+    } catch (error) {
+      logger.error(`An error occurred while logging in. Error:${error}`);
+      return Response.withoutData(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        Constants.SERVER_ERROR,
+      );
+    }
+  }
+
+  async logoutActiveSessions(req: Request, authToken: any): Promise<ResponseWithData> {
+    try {
+
+      // get gwt
+      const jwt = authToken.split(" ")[1]
+ 
+      // check jwt from redis
+      const retrievedJwt = await redis.KEYS(`*${jwt}*`)
+      if (retrievedJwt.length === 0) {
+        return Response.withoutData(HttpStatus.BAD_REQUEST, "There is no active session using your account")
+      }
+      
+      // delete jwt from cache
+      await redis.DEL(retrievedJwt[0])
+
+
+      return Response.withoutData(HttpStatus.OK, 'All active sessions terminated')
     } catch (error) {
       logger.error(`An error occurred while logging in. Error:${error}`);
       return Response.withoutData(

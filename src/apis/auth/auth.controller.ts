@@ -1,6 +1,5 @@
-import { Controller, Post, Body, Get, UseGuards, Res } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Res, Req, Get} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import AuthUser from '../../common/decorators/auth-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
 
 import {
@@ -12,20 +11,18 @@ import {
 } from '@nestjs/swagger';
 import { ResponseWithoutData } from '../../common/entities/response.entity';
 import { Constants } from '../../common/enums/constants.enum';
-import { Response } from 'express';
-import { CreateUserDto } from '../users/dtos/user.dto';
+import { Request, Response } from 'express';
+import { LoginDto } from './dtos/auth.dto'
 import { JwtAuthGuard } from './guards/jwt.guard';
-import { UsersService } from '../users/user.service';
-import { LoginDto } from './dtos/auth.dto';
-import { User } from '@prisma/client';
+
+
 
 @ApiTags('Authentication')
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly userService: UsersService,
-  ) {}
+  ) { }
 
   @Post('/login')
   @UseGuards(AuthGuard('local'))
@@ -44,42 +41,28 @@ export class AuthController {
     description: Constants.SERVER_ERROR,
     type: ResponseWithoutData,
   })
-  async register(@Body() loginDto: LoginDto, @Res() res: Response) {
-    const { status, ...responseData } = await this.authService.login(loginDto);
-
+  async register(@Body() loginDto: LoginDto, @Res() res: Response, @Req() req: Request) {
+    const { status, ...responseData } = await this.authService.login(loginDto, req);
     return res.status(status).send(responseData);
   }
 
-  @Post('/register')
+  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
+  @Get('logout/all')
   @ApiOperation({
-    summary: 'Used to register a user',
+    summary: 'Used to logout all active sessions for a user',
   })
   @ApiCreatedResponse({
-    description: 'User successfully Registerred',
-    type: ResponseWithoutData,
-  })
-  @ApiConflictResponse({
-    description: 'Conflict, User Already Exist',
+    description: 'All active sessions ended',
     type: ResponseWithoutData,
   })
   @ApiInternalServerErrorResponse({
     description: Constants.SERVER_ERROR,
     type: ResponseWithoutData,
   })
-  async addSecurityQuestion(
-    @Body() createUserDto: CreateUserDto,
-    @Res() res: Response,
-  ) {
-    const { status, ...responseData } = await this.userService.addUser(
-      createUserDto,
-    );
-
+  async logoutAllSessions(@Res() res: Response, @Req() req: Request) {
+    const authToken = req.headers.authorization
+    const { status, ...responseData } = await this.authService.logoutActiveSessions(req,authToken);
     return res.status(status).send(responseData);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('/profile')
-  getLoggedUser(@AuthUser() user: User): User {
-    return user;
   }
 }

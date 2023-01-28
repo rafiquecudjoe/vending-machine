@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Update npm | Install pnpm | Set PNPM_HOME | Install global packages
+# Install app dependencies
 RUN npm i -g npm@latest; \
     # Install pnpm
     npm install -g pnpm; \
@@ -20,17 +20,13 @@ RUN npm i -g npm@latest; \
     # Install dependencies
     pnpm add -g @nestjs/cli &&\
     pnpm install &&\
-    pnpm dlx prisma generate 
+    pnpm dlx prisma generate
 
 COPY . .
-    
 
-# Build
-RUN pnpm run build
+RUN npm run build
 
 FROM node:16
-
-WORKDIR /app
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./

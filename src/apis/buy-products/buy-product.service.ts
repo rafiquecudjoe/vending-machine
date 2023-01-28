@@ -6,7 +6,7 @@ import { ResponseWithoutData } from '../../common/entities/response.entity';
 import { UsersRepository } from '../../repositories/user.repository';
 import { BuyProductValidator } from './buy-product.validator';
 import { BuyProductDto } from './dtos/buy-product.dto';
-import { ProductsRepository } from 'src/repositories/product.repository';
+import { ProductsRepository } from '../../repositories/product.repository';
 
 @Injectable()
 export class BuyProductService {
@@ -37,6 +37,13 @@ export class BuyProductService {
           'Product does not exist',
         );
 
+      // check if amountOfProduct is greater than product amount available
+      const isProductAmountAvailableEnoughForPurchase = product.amountAvailable >= params.amountOfProduct
+      if (isProductAmountAvailableEnoughForPurchase === false) return Response.withoutData(
+        HttpStatus.BAD_REQUEST,
+        'Amount of Product to be bought is greater than product amount available',
+      );
+
       // calculate total amount to be spent
       const totalAmountToSpend: number = product.cost * params.amountOfProduct;
 
@@ -64,6 +71,9 @@ export class BuyProductService {
 
       // calculate change
       const changeAfterProductPurchase = user.deposits - totalAmountToSpend;
+
+      // decrease product Amount available
+      await this.productsRepository.decreaseProductAmountAvailable(params.productId,params.amountOfProduct)
 
       // success
       return Response.withData(

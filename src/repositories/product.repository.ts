@@ -18,6 +18,7 @@ export class ProductsRepository {
             productName: params.name,
             cost: params.cost,
             sellerId,
+            amountAvailable:params.amountAvailable
           },
         });
         resolve(product);
@@ -69,12 +70,12 @@ export class ProductsRepository {
     });
   }
 
-  updateProduct(sellerId: string, params: UpdateProductDto): Promise<string> {
+  updateProduct(productId: string, params: UpdateProductDto): Promise<string> {
     return new Promise(async (resolve, reject) => {
       try {
         await this.prismaService.product.update({
           where: {
-            id: sellerId,
+            id: productId,
           },
           data: {
             ...params,
@@ -88,13 +89,30 @@ export class ProductsRepository {
     });
   }
 
-  removeProduct(sellerId: string): Promise<string> {
+  removeProduct(productId: string): Promise<string> {
     return new Promise(async (resolve, reject) => {
       try {
         await this.prismaService.product.delete({
           where: {
-            id: sellerId,
+            id: productId
           },
+        });
+        resolve('success');
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  decreaseProductAmountAvailable(productId:string,amount:number): Promise<string> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await this.prismaService.product.update({
+          where: {
+            id: productId
+          }, data: {
+            amountAvailable:{decrement:amount}
+          }
         });
         resolve('success');
       } catch (error) {

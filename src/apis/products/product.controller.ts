@@ -23,11 +23,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { ProductsService } from './product.service';
 import { CreateProductDto, UpdateProductDto } from './dtos/product.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Role } from 'src/common/decorators/roles.decorator';
+import { Role } from '../../common/decorators/roles.decorator';
 import { Roles, User } from '@prisma/client';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @ApiTags('Products Endpoints')
-@Controller('/api/v1/products')
+  @Controller('/api/v1/products')
+@UseGuards(JwtAuthGuard)
 @UseGuards(AuthGuard('jwt'))
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -140,9 +142,10 @@ export class ProductsController {
     description: Constants.SERVER_ERROR,
     type: ResponseWithoutData,
   })
-  async deleteProduct(@Param('id') productId: string, @Res() res: Response) {
+  async deleteProduct(@Param('id') productId: string, @Res() res: Response, @Req() req: Request,) {
+    const user = req.user as User;
     const { status, ...responseData } =
-      await this.productsService.deleteProduct('sellerId', productId);
+      await this.productsService.deleteProduct(user.id, productId);
 
     return res.status(status).send(responseData);
   }

@@ -61,4 +61,19 @@ describe('SecurityQuestionsService', () => {
       expect(response.body.message).toBeDefined();
     });
   });
+
+  describe('BUY /api/v1/deposit', () => {
+    it('checks if deposit was successful', async () => {
+
+      const requestBody = {
+      amount:10
+      };
+      const response = await supertest(app.getHttpServer())
+        .post('/api/v1/deposit')
+        .send(requestBody);
+
+      expect(response.status).toBeDefined();
+      expect(response.body.message).toBeDefined();
+    });
+  });
 });

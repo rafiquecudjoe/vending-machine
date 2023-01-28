@@ -14,8 +14,10 @@ import { Roles, User } from '@prisma/client';
 import { BuyProductService } from './buy-product.service';
 import { BuyProductDto } from './dtos/buy-product.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('Buy Product Endpoints')
 @Controller('/api/v1/buy')
 export class BuyProductController {

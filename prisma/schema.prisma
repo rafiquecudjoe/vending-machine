@@ -12,7 +12,7 @@ datasource db {
 
 model Product {
   id              String   @id @default(uuid())
-  amountAvailable Int?     @map("amount_available") @db.Integer
+  amountAvailable Int    @map("amount_available") @db.Integer
   cost            Int      @map("cost") @db.Integer
   productName     String   @unique @map("product_name") @db.VarChar(50)
   dateCreated     DateTime @default(now()) @map("date_created") @db.Timestamp(3)

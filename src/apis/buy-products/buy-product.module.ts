@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ProductsRepository } from 'src/repositories/product.repository';
-import { UsersRepository } from 'src/repositories/user.repository';
+import { ProductsRepository } from '../../repositories/product.repository';
+import { UsersRepository } from '../../repositories/user.repository';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuthModule } from '../auth/auth.module';
 import { ProductsModule } from '../products/product.module';
