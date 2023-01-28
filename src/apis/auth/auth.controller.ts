@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Res, Req, Get} from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Res,
+  Req,
+  Get,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -12,17 +20,13 @@ import {
 import { ResponseWithoutData } from '../../common/entities/response.entity';
 import { Constants } from '../../common/enums/constants.enum';
 import { Request, Response } from 'express';
-import { LoginDto } from './dtos/auth.dto'
+import { LoginDto } from './dtos/auth.dto';
 import { JwtAuthGuard } from './guards/jwt.guard';
-
-
 
 @ApiTags('Authentication')
 @Controller('api/v1/auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-  ) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('/login')
   @UseGuards(AuthGuard('local'))
@@ -41,8 +45,15 @@ export class AuthController {
     description: Constants.SERVER_ERROR,
     type: ResponseWithoutData,
   })
-  async register(@Body() loginDto: LoginDto, @Res() res: Response, @Req() req: Request) {
-    const { status, ...responseData } = await this.authService.login(loginDto, req);
+  async register(
+    @Body() loginDto: LoginDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
+    const { status, ...responseData } = await this.authService.login(
+      loginDto,
+      req,
+    );
     return res.status(status).send(responseData);
   }
 
@@ -61,8 +72,9 @@ export class AuthController {
     type: ResponseWithoutData,
   })
   async logoutAllSessions(@Res() res: Response, @Req() req: Request) {
-    const authToken = req.headers.authorization
-    const { status, ...responseData } = await this.authService.logoutActiveSessions(req,authToken);
+    const authToken = req.headers.authorization;
+    const { status, ...responseData } =
+      await this.authService.logoutActiveSessions(req, authToken);
     return res.status(status).send(responseData);
   }
 }

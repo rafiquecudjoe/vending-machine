@@ -34,7 +34,7 @@ export class UsersService {
       const hashedPassword = await bcrypt.hash(params.password, 10);
 
       // save user
-     const user =  await this.usersRepository.registerUser({
+      const user = await this.usersRepository.registerUser({
         username: params.username,
         role: params.role,
         password: hashedPassword,
@@ -44,7 +44,7 @@ export class UsersService {
       return Response.withData(
         HttpStatus.CREATED,
         'User saved successfully',
-        user
+        user,
       );
     } catch (error) {
       logger.error(`An error occurred while saving user: ${error}`);

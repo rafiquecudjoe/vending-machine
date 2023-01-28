@@ -18,7 +18,7 @@ export class ProductsRepository {
             productName: params.name,
             cost: params.cost,
             sellerId,
-            amountAvailable:params.amountAvailable
+            amountAvailable: params.amountAvailable,
           },
         });
         resolve(product);
@@ -94,7 +94,7 @@ export class ProductsRepository {
       try {
         await this.prismaService.product.delete({
           where: {
-            id: productId
+            id: productId,
           },
         });
         resolve('success');
@@ -104,15 +104,19 @@ export class ProductsRepository {
     });
   }
 
-  decreaseProductAmountAvailable(productId:string,amount:number): Promise<string> {
+  decreaseProductAmountAvailable(
+    productId: string,
+    amount: number,
+  ): Promise<string> {
     return new Promise(async (resolve, reject) => {
       try {
         await this.prismaService.product.update({
           where: {
-            id: productId
-          }, data: {
-            amountAvailable:{decrement:amount}
-          }
+            id: productId,
+          },
+          data: {
+            amountAvailable: { decrement: amount },
+          },
         });
         resolve('success');
       } catch (error) {

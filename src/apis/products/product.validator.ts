@@ -26,7 +26,12 @@ export class ProductsValidator {
               .multiple(5)
               .label('Cost')
               .required(),
-            amountAvailable: joi.number().positive().min(1).label('Amount available').required(),
+            amountAvailable: joi
+              .number()
+              .positive()
+              .min(1)
+              .label('Amount available')
+              .required(),
           })
           .strict();
 
@@ -73,7 +78,6 @@ export class ProductsValidator {
             ),
           );
 
-  
         // check if product belongs to seller
         const doesProductBelongToSeller =
           sellerId === retrievedProduct.sellerId;
@@ -93,9 +97,7 @@ export class ProductsValidator {
     });
   }
 
-  validateRetrieveProduct(
-    productId: string,
-  ): Promise<ResponseWithoutData> {
+  validateRetrieveProduct(productId: string): Promise<ResponseWithoutData> {
     return new Promise(async (resolve, reject) => {
       try {
         // check if product exist
@@ -127,7 +129,11 @@ export class ProductsValidator {
           .object({
             name: joi.string().min(3).label('Product Name'),
             cost: joi.number().positive().min(1).label('Cost'),
-            amountAvailable: joi.number().positive().min(1).label('Amount available'),
+            amountAvailable: joi
+              .number()
+              .positive()
+              .min(1)
+              .label('Amount available'),
           })
           .min(1)
           .strict();

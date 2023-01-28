@@ -29,8 +29,6 @@ export class BuyProductValidator {
           return resolve(
             Response.withoutData(HttpStatus.BAD_REQUEST, joiValidationresults),
           );
-        
-        
 
         // success
         resolve(Response.withoutData(HttpStatus.OK, 'Passed'));

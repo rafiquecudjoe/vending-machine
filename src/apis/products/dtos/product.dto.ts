@@ -1,13 +1,13 @@
 export class CreateProductDto {
   name: string;
   cost: number;
-  amountAvailable:number
+  amountAvailable: number;
 }
 
 export class UpdateProductDto {
   name?: string;
   cost?: number;
-  amountAvailable?: number
+  amountAvailable?: number;
 }
 
 export class ValidatePatchProduct {

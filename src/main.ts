@@ -7,7 +7,6 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { expressSessionOptions } from './config/config';
 import * as passport from 'passport';
 
-
 const redisStore = require('connect-redis')(expressSession);
 
 async function bootstrap() {
@@ -15,7 +14,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('vending Machine API')
-    .setDescription("The Vending Machine API documentation")
+    .setDescription('The Vending Machine API documentation')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
@@ -27,13 +26,13 @@ async function bootstrap() {
       store: new redisStore({
         host: process.env.REDIS_HOST,
         port: Number(process.env.REDIS_PORT),
-        client: redis
+        client: redis,
       }),
-    })
+    }),
   );
   app.use(passport.initialize());
   app.use(passport.session());
-  
+
   await app.listen(3000);
 }
 bootstrap();

@@ -38,11 +38,13 @@ export class BuyProductService {
         );
 
       // check if amountOfProduct is greater than product amount available
-      const isProductAmountAvailableEnoughForPurchase = product.amountAvailable >= params.amountOfProduct
-      if (isProductAmountAvailableEnoughForPurchase === false) return Response.withoutData(
-        HttpStatus.BAD_REQUEST,
-        'Amount of Product to be bought is greater than product amount available',
-      );
+      const isProductAmountAvailableEnoughForPurchase =
+        product.amountAvailable >= params.amountOfProduct;
+      if (isProductAmountAvailableEnoughForPurchase === false)
+        return Response.withoutData(
+          HttpStatus.BAD_REQUEST,
+          'Amount of Product to be bought is greater than product amount available',
+        );
 
       // calculate total amount to be spent
       const totalAmountToSpend: number = product.cost * params.amountOfProduct;
@@ -73,7 +75,10 @@ export class BuyProductService {
       const changeAfterProductPurchase = user.deposits - totalAmountToSpend;
 
       // decrease product Amount available
-      await this.productsRepository.decreaseProductAmountAvailable(params.productId,params.amountOfProduct)
+      await this.productsRepository.decreaseProductAmountAvailable(
+        params.productId,
+        params.amountOfProduct,
+      );
 
       // success
       return Response.withData(

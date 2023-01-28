@@ -28,7 +28,7 @@ import { Roles, User } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @ApiTags('Products Endpoints')
-  @Controller('/api/v1/products')
+@Controller('/api/v1/products')
 @UseGuards(JwtAuthGuard)
 @UseGuards(AuthGuard('jwt'))
 export class ProductsController {
@@ -142,7 +142,11 @@ export class ProductsController {
     description: Constants.SERVER_ERROR,
     type: ResponseWithoutData,
   })
-  async deleteProduct(@Param('id') productId: string, @Res() res: Response, @Req() req: Request,) {
+  async deleteProduct(
+    @Param('id') productId: string,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     const user = req.user as User;
     const { status, ...responseData } =
       await this.productsService.deleteProduct(user.id, productId);

@@ -29,13 +29,10 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role } from '../../common/decorators/roles.decorator';
 import { Roles } from '@prisma/client';
 
-
-
 @ApiTags('Users Endpoints')
 @Controller('/api/v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
- 
 
   @Post('')
   @ApiOperation({

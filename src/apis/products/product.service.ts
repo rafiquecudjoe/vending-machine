@@ -32,7 +32,7 @@ export class ProductsService {
         {
           cost: params.cost,
           name: params.name,
-          amountAvailable:params.amountAvailable
+          amountAvailable: params.amountAvailable,
         },
         sellerId,
       );
@@ -131,12 +131,11 @@ export class ProductsService {
 
   async getAProduct(productId: string): Promise<ResponseWithData> {
     try {
-
       // validate update product
       const validationResults =
-        await this.productValidator.validateRetrieveProduct(productId)
+        await this.productValidator.validateRetrieveProduct(productId);
       if (validationResults.status !== HttpStatus.OK) return validationResults;
-      
+
       // retrieve product
       const product = await this.productRepository.retrieveProductById(
         productId,

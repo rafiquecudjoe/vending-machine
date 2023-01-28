@@ -64,9 +64,8 @@ describe('SecurityQuestionsService', () => {
 
   describe('BUY /api/v1/deposit', () => {
     it('checks if deposit was successful', async () => {
-
       const requestBody = {
-      amount:10
+        amount: 10,
       };
       const response = await supertest(app.getHttpServer())
         .post('/api/v1/deposit')
